@@ -192,7 +192,7 @@ class Particle {
         float dx = other.x - this.x;
         float dy = other.y - this.y;
         float dz = other.z - this.z;
-        float distanceSquared = dz * dx + dy * dy + dz * dz;
+        float distanceSquared = dx * dx + dy * dy + dz * dz; //**
 
         if (distanceSquared < repulsionRadius * repulsionRadius && distanceSquared > 0.001f) {
             float distance = (float) Math.sqrt(distanceSquared);
