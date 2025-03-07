@@ -83,6 +83,7 @@ public class FluidSimulation {
             // Render pan and water
             renderPan();
             water.update(panTiltX, panTiltZ);   // Pass current pan tilt to the water simulation
+            water.update(panTiltX, panTiltZ);   // Pass current pan tilt to the water simulation
             water.render();
 
             // Swap buffers and poll events
@@ -171,7 +172,7 @@ class Particle {
     public float x, y, z;
     public float vx = 0, vy = 0, vz = 0;
     private float gravity = -9.81f;
-    private float damping = 0.85f;
+    private float damping = 0f;
     private float panBoundary = 4.0f;
     private float outOfBoundsThreshold = 6.0f;
     private Random random = new Random();
@@ -225,7 +226,7 @@ class Particle {
 
     public void update(float tiltX, float tiltZ) {
         // Apply gravity
-        vy += gravity * 0.01f;
+
 
         // Tilt forces (apply based on pan tilt)
         float tiltForceX = -(float) Math.sin(Math.toRadians(tiltZ));
@@ -238,7 +239,12 @@ class Particle {
         y += vy * 0.01f;
         z += vz * 0.01f;
 
-        y = cakePanPositionY(x, z, tiltX, tiltZ);
+        if (y <= cakePanPositionY(x, z, tiltX, tiltZ)) {
+            y = cakePanPositionY(x, z, tiltX, tiltZ);
+            vy = 0;
+        } else {
+            vy += gravity * 0.003f;
+        }
 
         // Apply velocity decay
         vx *= 0.99f;
@@ -247,11 +253,11 @@ class Particle {
         // Collision detection within pan boundaries
         if (Math.abs(x) > panBoundary || Math.abs(z) > panBoundary) {
             if (Math.abs(x) > panBoundary) {
-                vx = -vx * damping + (random.nextFloat() - 0.5f) * 0.05f;
+                vx = -vx + (random.nextFloat() - 0.5f) * 0.05f;
                 x = Math.signum(x) * panBoundary;
             }
             if (Math.abs(z) > panBoundary) {
-                vz = -vz * damping + (random.nextFloat() - 0.5f) * 0.05f;
+                vz = -vz + (random.nextFloat() - 0.5f) * 0.05f;
                 z = Math.signum(z) * panBoundary;
             }
         }
